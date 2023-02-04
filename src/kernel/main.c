@@ -3,11 +3,16 @@
 //light blue(9) light green(10) light cyan(11) light red(12) light megenta(13) yellow(14) 
 //white(15)
 
+extern void kprintWithColor(char *, unsigned char);
+extern void kprint(char *);
+
 void kernel_main()
 {        
+    kprint("Starting OS\n");    
+
     while( 1 );
 }
     
 void kernel_interrupt_handler( int number )
-{
+{             
 }
