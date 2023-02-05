@@ -1,19 +1,18 @@
-//Text Mode 16 Colors:
-//black(0) blue(1) green(2) cyan(3) red(4) magenta(5) brown(6) light gray(7) dark gray(8)
-//light blue(9) light green(10) light cyan(11) light red(12) light megenta(13) yellow(14) 
-//white(15)
+#include "display.h"
 
 #define NULL 0
 
-unsigned char * VIDEOBUFFER = (unsigned char *)0xb8000;
-const unsigned char WIDTH = 80;
-const unsigned char HEIGHT = 25;
-const unsigned char BYTESPERCHAR = 2;
 unsigned int currentX = 0;
 unsigned int currentY = 0;
+unsigned char currentColor = MAKECOLOR(GRAY,BLACK);
 
-void kprintWithColor(char *message, unsigned char color)
-{
+void kprint(char *message)
+{    
+    const unsigned char WIDTH = 80;
+    const unsigned char HEIGHT = 25;
+    const unsigned char BYTESPERCHAR = 2;
+    volatile unsigned char * const video = (unsigned char *)0xb8000;
+
     if (message == NULL)
         return;
 
@@ -31,9 +30,9 @@ void kprintWithColor(char *message, unsigned char color)
             for (int i = 0; i < (HEIGHT * WIDTH) * BYTESPERCHAR; ++i)
             {
                 if (i < ((HEIGHT - 1) * (WIDTH * BYTESPERCHAR)))
-                    VIDEOBUFFER[i] = VIDEOBUFFER[i + (WIDTH * BYTESPERCHAR)];
+                    video[i] = video[i + (WIDTH * BYTESPERCHAR)];
                 else
-                    VIDEOBUFFER[i] = '\0';                    
+                    video[i] = '\0';                    
             }
 
             --currentY;
@@ -54,14 +53,19 @@ void kprintWithColor(char *message, unsigned char color)
 
         unsigned int actualLocation = currentY * (WIDTH * BYTESPERCHAR) + (currentX * BYTESPERCHAR);
 
-        VIDEOBUFFER[actualLocation] = *message;
-        VIDEOBUFFER[actualLocation + 1] = color;
+        video[actualLocation] = *message;
+        video[actualLocation + 1] = currentColor;
 
         ++currentX;     
     }
 }
 
-void kprint(char *message)
+void setTextColor(unsigned char color)
 {
-    kprintWithColor(message, 0x07);
+    currentColor = color;
+}
+
+unsigned char getTextColor()
+{
+    return currentColor;
 }
