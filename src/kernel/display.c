@@ -9,9 +9,8 @@ unsigned char currentColor = MAKECOLOR(GRAY,BLACK);
 void kprint(char *message)
 {    
     const unsigned char WIDTH = 80;
-    const unsigned char HEIGHT = 25;
-    const unsigned char BYTESPERCHAR = 2;
-    volatile unsigned char * const video = (unsigned char *)0xb8000;
+    const unsigned char HEIGHT = 25;    
+    volatile unsigned short * const video = (unsigned short *)0xb8000;
 
     if (message == NULL)
         return;
@@ -27,12 +26,12 @@ void kprint(char *message)
         if (currentY >= HEIGHT)
         {                 
             //scroll up                   
-            for (int i = 0; i < (HEIGHT * WIDTH) * BYTESPERCHAR; ++i)
+            for (int i = 0; i < (HEIGHT * WIDTH); ++i)
             {
-                if (i < ((HEIGHT - 1) * (WIDTH * BYTESPERCHAR)))
-                    video[i] = video[i + (WIDTH * BYTESPERCHAR)];
+                if (i < ((HEIGHT - 1) * WIDTH))
+                    video[i] = video[i + WIDTH];
                 else
-                    video[i] = '\0';                    
+                    video[i] = 0x0;                    
             }
 
             --currentY;
@@ -51,14 +50,14 @@ void kprint(char *message)
             continue;
         }
 
-        unsigned int actualLocation = currentY * (WIDTH * BYTESPERCHAR) + (currentX * BYTESPERCHAR);
+        unsigned int actualLocation = (currentY * WIDTH) + currentX;
 
-        video[actualLocation] = *message;
-        video[actualLocation + 1] = currentColor;
+        video[actualLocation] = (currentColor << 8) | *message;        
 
         ++currentX;     
     }
 }
+
 
 void setTextColor(unsigned char color)
 {
