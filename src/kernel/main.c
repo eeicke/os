@@ -10,7 +10,7 @@ void kernel_main()
 void kernel_interrupt_handler( int number )
 {        
     unsigned char color = getTextColor();
-    setTextColor(MAKECOLOR(RED,BLACK));
+    setTextColor(RED);
     kprint("Here\n");
     setTextColor(color);
 }
