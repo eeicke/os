@@ -21,7 +21,9 @@
 
 #define MAKECOLOR(fg,bg) ((bg << 4) | fg)
 
+extern void kprintf(char *, ...);
 extern void kprint(char *);
+extern void kputchar(char);
 void setTextColor(unsigned char);
 unsigned char getTextColor();
 
