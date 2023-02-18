@@ -19,6 +19,7 @@ main:
     int 10h
 
     ;Set up GDT
+    ;We subtract here to get the offset of gdtr because it's relative to the DS in real mode.
     lgdt [gdtr - main]
 
     ;Enter protected mode
@@ -62,7 +63,7 @@ main:
     out 0xa1, al
     
     ;Load interrupt table
-
+    ;We subtract here to get the offset of idtr because it's relative to the DS in real mode.
     lidt [idtr - main]
 
     ;Do required jmp after switching to protected mode
