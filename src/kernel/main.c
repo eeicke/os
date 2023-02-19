@@ -1,6 +1,8 @@
 #include "display.h"
 #include "uitoa.h"
 
+unsigned char int32FiredOnce = 0;
+
 void kernel_main()
 {            
     kprint("Starting OS\n");
@@ -10,8 +12,11 @@ void kernel_main()
     
 void kernel_interrupt_handler( int number )
 {     
-    unsigned char color = getTextColor();
-    setTextColor(RED);
-    kprintf("Intterupt %d\n", number);
-    setTextColor(color);
+    if (int32FiredOnce && number == 32)
+        return;
+
+    if (number == 32)
+        int32FiredOnce = 1;
+
+    kprintf("Int %d\n", number);
 }
