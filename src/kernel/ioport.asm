@@ -73,7 +73,7 @@ inDoubleWord:
     
     mov dx, [esp + 8]
     
-    in ax, dx
+    in eax, dx
     
     pop edx
 
