@@ -1,11 +1,12 @@
 #include "display.h"
 #include "uitoa.h"
+#include "ioport.h"
 
 unsigned char int32FiredOnce = 0;
 
 void kernel_main()
 {            
-    kprint("Starting OS\n");
+    kprint("Starting OS\n");    
 
     while( 1 );
 }

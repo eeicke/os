@@ -83,3 +83,4 @@ start:
 
 %include "gdt.asm"
 %include "idt.asm"
+%include "ioport.asm"
