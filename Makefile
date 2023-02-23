@@ -25,7 +25,7 @@ KERNEL_FLAGS = -Wall -m32 -c -ffreestanding -fno-asynchronous-unwind-tables -fno
 DISK_IMG=$(BIN_DIR)/os.img
 
 QEMU = qemu-system-x86_64 -usb -device qemu-xhci -s -drive format=raw,file=$(DISK_IMG)
-QEMU_DEBUG = qemu-system-x86_64 usb -device qemu-xhci -s -S -drive format=raw,file=$(DISK_IMG)
+QEMU_DEBUG = qemu-system-x86_64 -usb -device qemu-xhci -s -S -drive format=raw,file=$(DISK_IMG)
 
 build: $(BOOT_IMG) $(KERNEL_IMAGE)
 	dd if=$(BOOT_IMG) of=$(DISK_IMG)
