@@ -29,8 +29,8 @@ QEMU_DEBUG = qemu-system-x86_64 -usb -device qemu-xhci -s -S -drive format=raw,f
 
 build: $(BOOT_IMG) $(KERNEL_IMAGE)
 	dd if=$(BOOT_IMG) of=$(DISK_IMG)
-	dd seek=1 conv=sync if=$(KERNEL_IMAGE) of=$(DISK_IMG) bs=512 count=6
-	dd seek=7 conv=sync if=/dev/zero of=$(DISK_IMG) bs=512 count=2873
+	dd seek=1 conv=sync if=$(KERNEL_IMAGE) of=$(DISK_IMG) bs=512 
+#	dd seek=6 conv=sync if=/dev/zero of=$(DISK_IMG) bs=512 count=6
 
 $(BIN_DIR):
 	mkdir $(BIN_DIR)
