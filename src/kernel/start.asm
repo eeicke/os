@@ -5,7 +5,58 @@ extern kernel_main ;this is main.c
 main:        
     mov ax, cs
     mov ds, ax    
-        
+
+startMemoryMap:
+    mov ax, 800h
+    mov es, ax
+    mov di, 4
+    xor ebx, ebx
+    xor bp, bp
+    mov edx, 0534D4150h
+    mov eax, 0e820h
+    mov [es:di + 20], dword 1
+    mov ecx, 24
+    int 15h    
+    jc endMemoryMap
+    mov edx, 0x0534D4150
+    cmp eax, edx
+    jne  endMemoryMap
+    test ebx, ebx
+    je endMemoryMap
+
+memoryMapLoop:
+    mov eax, 0e820h
+    mov [es:di + 20], dword 1
+    mov ecx, 24
+    int 15h
+    jc memoryMapFinished
+    mov edx, 0x0534D4150
+
+memoryMapEntry:
+    jcxz memoryMapSkip
+    cmp cl, 20
+    jbe memoryMapShortEntry
+    test byte [es:di + 20], 1
+    je memoryMapSkip
+
+memoryMapShortEntry:
+
+    mov ecx, [es:di + 8]
+    or ecx, [es:di + 12]
+    jz memoryMapSkip
+    inc bp
+    add di, 24    
+
+memoryMapSkip:
+    test ebx, ebx
+    jne short memoryMapLoop
+
+memoryMapFinished:
+    mov [es:0], bp
+    clc
+
+endMemoryMap:        
+
     cli    
 
     ;Set video mode to clear the screen

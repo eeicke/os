@@ -1,6 +1,7 @@
 #include<stdarg.h>
 #include "display.h"
 #include "uitoa.h"
+#include "stdint.h"
 
 #define NULL 0
 
@@ -26,18 +27,32 @@ void kprintf(char *format, ...)
 
             switch (*format)
             {
+                case 'l':
+                    
+                    int base = 10;
+
+                    ++format;
+                    if (*format == 'x')
+                        base = 16;
+                    else
+                        --format;
+                                        
+                    uitoa(va_arg( arg, uint64_t ), tmp, base);
+                    kprint(tmp);
+                break;
+
                 case 'd':
-                    uitoa(va_arg( arg, int ), tmp, 10);
+                    uitoa(va_arg( arg, uint32_t ), tmp, 10);
                     kprint(tmp);
                 break;
 
                 case 'x':
-                    uitoa(va_arg( arg, int ), tmp, 16);
+                    uitoa(va_arg( arg, uint32_t ), tmp, 16);
                     kprint(tmp);
                 break;
 
                 case 'c':                    
-                    kputchar((char)va_arg( arg, int));
+                    kputchar((char)va_arg( arg, uint32_t));
                 break;
 
                 case 's':                    
