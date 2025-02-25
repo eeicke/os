@@ -1,6 +1,7 @@
 #include "stdint.h"
 #include "display.h"
 #include "memmap.h"
+#include "ata.h"
 
 unsigned char int32FiredOnce = 0;
 
