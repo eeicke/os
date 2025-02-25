@@ -1,6 +1,6 @@
 #include "uitoa.h"
 
-char * uitoa(unsigned int value, char *buf, unsigned int base)
+char * uitoa(uint32_t value, char *buf, unsigned int base)
 {
     const char * nums = "0123456789ABCDEF";
 

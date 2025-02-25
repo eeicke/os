@@ -1,6 +1,8 @@
 #ifndef _DISPLAY_H
 #define _DISPLAY_H
 
+#include "stdint.h"
+
 //Text Colors
 #define BLACK           0x0
 #define BLUE            0x1
@@ -24,7 +26,14 @@
 extern void kprintf(char *, ...);
 extern void kprint(char *);
 extern void kputchar(char);
+extern void kprintmem(uint8_t * start, uint32_t length);
+void printSignedInteger(int32_t, uint32_t, uint32_t);
+void printUnsignedInteger(uint32_t, uint32_t, uint32_t);
 void setTextColor(unsigned char);
 unsigned char getTextColor();
+
+int32_t abs32(int32_t);
+int64_t abs64(int64_t);
+int strlen(char *);
 
 #endif
