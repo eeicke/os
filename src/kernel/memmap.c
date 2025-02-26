@@ -1,8 +1,15 @@
 #include "memmap.h"
 #include "display.h"
 
-void DisplayMemoryMap(MemoryMapEntry *mmap, int size)
+void DisplayMemoryMap()
 {
+    //The boot process stores the length of the array at address 0x8000
+    //and the first entry is stored at 0x8004    
+    int size = *((uint32_t *)0x8000);
+    MemoryMapEntry *mmap = (MemoryMapEntry *)0x8004;
+
+    kprintf("Memory Map Size: %d\n", size);
+
     for (int i = 0; i < size; ++i, ++mmap)
     {                
         //This is a 32-bit system so cast the 64bit addresses
