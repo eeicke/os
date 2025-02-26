@@ -31,14 +31,20 @@ void kprintf(char *format, ...)
     enum State state = looking;    
     int zeroPadWidth = 0;    
     int precisionWidth = 0;
+    int precisionFlag = 0;
 
     for (;*(format) != '\0'; ++format)
     {
         switch (state)
         {
-            case looking:
+            case looking:                
                 if (*format == '%')
+                {
+                    zeroPadWidth = 0;
+                    precisionFlag = 0;
+                    precisionWidth = 0;                                        
                     state = specifier;
+                }
                 else
                     kputchar(*format); 
             break;
@@ -52,12 +58,11 @@ void kprintf(char *format, ...)
                     break;
 
                     case '.':                           
-                        precisionWidth = 0;
+                        precisionFlag = 1;                        
                         state = precision;
                     break;
 
-                    case '0':                           
-                        zeroPadWidth = 0;
+                    case '0':                              
                         state = zeroPadding;
                     break;                    
 
@@ -81,7 +86,7 @@ void kprintf(char *format, ...)
                     break;
 
                     case 'f':                                                              
-                        printFloat(va_arg( arg, double ), zeroPadWidth, precisionWidth);
+                        printFloat(va_arg( arg, double ), zeroPadWidth, precisionFlag == 1 ? precisionWidth : 6);
                         state = looking;
                     break;
 
@@ -106,7 +111,7 @@ void kprintf(char *format, ...)
                     zeroPadWidth = (zeroPadWidth * 10) + (*format - '0');
                 else if (*format == '.')
                 {
-                    precisionWidth = 0;
+                    precisionFlag = 1;                     
                     state = precision;
                 }
                 else
