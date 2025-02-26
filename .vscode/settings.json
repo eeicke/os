@@ -2,6 +2,7 @@
     "C_Cpp.errorSquiggles": "enabled",
     "files.associations": {
         "display.h": "c",
-        "memmap.h": "c"
+        "memmap.h": "c",
+        "ata.h": "c"
     }
 }

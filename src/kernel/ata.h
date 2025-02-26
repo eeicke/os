@@ -7,8 +7,8 @@
 #define BASEPORT 0x1F0
 #define BLOCKSIZE 0x200 //512 bytes
 
-int ReadBlockPIO(int, void*);
-int WriteBlockPIO(int, void*);
+int ReadBlockPIO(uint8_t, uint32_t, void*);
+int WriteBlockPIO(uint8_t, uint32_t, void*);
 int WaitForDriveReady();
 
 #endif

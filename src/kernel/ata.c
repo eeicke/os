@@ -1,8 +1,11 @@
 #include "ata.h"
 
-int ReadBlockPIO(int lba, void* buffer)
+int ReadBlockPIO(uint8_t drive, uint32_t lba, void* buffer)
 {
-    OutByte(BASEPORT + 6, (0x0e0 | ((lba & 0x0F000000 ) >> 24)));
+    if (drive > 1)
+        drive = 1;
+
+    OutByte(BASEPORT + 6, ((0x0e0 | (drive << 4)) | ((lba & 0x0F000000 ) >> 24)));            
     OutByte(BASEPORT + 2, 1);
     OutByte(BASEPORT + 3, lba & 0x000000FF);
     OutByte(BASEPORT + 4, (lba & 0x0000FF00 ) >> 8);
@@ -18,9 +21,12 @@ int ReadBlockPIO(int lba, void* buffer)
     return 0;
 }
 
-int WriteBlockPIO(int lba, void* buffer)
+int WriteBlockPIO(uint8_t drive, uint32_t lba, void* buffer)
 {
-    OutByte(BASEPORT + 6, (0x0e0 | ((lba & 0x0F000000) >> 24)));
+    if (drive > 1)
+        drive = 1;    
+
+    OutByte(BASEPORT + 6, ((0x0e0 | (drive << 4)) | ((lba & 0x0F000000 ) >> 24)));
     OutByte(BASEPORT + 2, 1);
     OutByte(BASEPORT + 3, lba & 0x000000FF);
     OutByte(BASEPORT + 4, (lba & 0x0000FF00) >> 8);
