@@ -3,6 +3,6 @@
 
 #include "stdint.h"
 
-char * uitoa(uint32_t, char *, unsigned int);
-
+char * uitoa(uint32_t, char *, uint32_t);
+char * ftoa(float, char *, uint32_t);
 #endif

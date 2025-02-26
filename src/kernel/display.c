@@ -1,6 +1,8 @@
 #include "stdarg.h"
 #include "display.h"
 #include "uitoa.h"
+#include "string.h"
+#include "math.h"
 
 #define NULL 0
 
@@ -13,12 +15,13 @@ typedef enum State
     looking = 0,
     specifier = 1,
     zeroPadding = 2,
-    precision = 3
+    precision = 3,
+    longInt = 4
 } State;
 
 
 void kprintf(char *format, ...)
-{
+{    
     if (format == NULL)
         return;
 
@@ -74,11 +77,11 @@ void kprintf(char *format, ...)
                     break;
 
                     case 'l':
-                        printUnsignedInteger(va_arg( arg, uint64_t ), zeroPadWidth, 16);
-                        state = looking;                    
+                        state = longInt;                        
                     break;
 
-                    case 'f':
+                    case 'f':                                                              
+                        printFloat(va_arg( arg, double ), zeroPadWidth, precisionWidth);
                         state = looking;
                     break;
 
@@ -101,6 +104,11 @@ void kprintf(char *format, ...)
             case zeroPadding:
                 if (*format >= '0' && *format <= '9')
                     zeroPadWidth = (zeroPadWidth * 10) + (*format - '0');
+                else if (*format == '.')
+                {
+                    precisionWidth = 0;
+                    state = precision;
+                }
                 else
                 {
                     --format;
@@ -108,17 +116,32 @@ void kprintf(char *format, ...)
                 }
             break;
 
-            case precision:
+            case precision:                
                 if (*format >= '0' && *format <= '9')
                     precisionWidth = (precisionWidth * 10) + (*format - '0');
                 else
                 {
                     --format;
-                    state = looking;
+                    state = specifier;
+                }                
+            break;
+
+            case longInt:
+                if (*format == 'x')
+                    printUnsignedInteger(va_arg( arg, uint64_t ), zeroPadWidth, 16);
+                else
+                {
+                    printUnsignedInteger(va_arg( arg, uint64_t ), zeroPadWidth, 10);
+                    --format;
                 }
+                        
+                state = looking;                    
             break;
         }
     }
+
+    if (state == longInt)
+        printUnsignedInteger(va_arg( arg, uint64_t ), zeroPadWidth, 10);
 }
 
 /*
@@ -336,6 +359,29 @@ void printUnsignedInteger(uint32_t val, uint32_t zeroPadWith, uint32_t base)
     kprint(tmp);
 }
 
+void printFloat(float val, uint32_t zeroPadWith, uint32_t precisionWidth)
+{      
+    char tmp[30];    
+
+    ftoa(val, tmp, precisionWidth);
+    
+    if (zeroPadding > 0)
+    {        
+        int len = 0;
+        
+        for (;tmp[len] != '\0' && tmp[len] != '.'; ++len);
+        
+        if (len < zeroPadWith)
+        {
+            for (int i = 0; i < zeroPadWith - len; ++i)
+                kputchar('0');
+        }
+    }    
+
+    kprint(tmp);
+}
+
+
 void setTextColor(unsigned char color)
 {
     currentColor = color;
@@ -345,29 +391,3 @@ unsigned char getTextColor()
 {
     return currentColor;
 }
-
-int32_t abs32(int32_t val)
-{
-    if (val >= 0)
-        return val;
-
-    return -val;
-}
-
-int64_t abs64(int64_t val)
-{
-    if (val >= 0)
-        return val;
-
-    return -val;
-}
-
-int strlen(char *val)
-{
-    int result = 0;
-
-    for (;*val != '\0'; ++result, ++val);
-
-    return result;
-}
-

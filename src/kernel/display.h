@@ -29,11 +29,8 @@ extern void kputchar(char);
 extern void kprintmem(uint8_t * start, uint32_t length);
 void printSignedInteger(int32_t, uint32_t, uint32_t);
 void printUnsignedInteger(uint32_t, uint32_t, uint32_t);
+void printFloat(float, uint32_t, uint32_t);
 void setTextColor(unsigned char);
 unsigned char getTextColor();
-
-int32_t abs32(int32_t);
-int64_t abs64(int64_t);
-int strlen(char *);
 
 #endif

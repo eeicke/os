@@ -1,6 +1,8 @@
 #include "uitoa.h"
+#include "string.h"
+#include "math.h"
 
-char * uitoa(uint32_t value, char *buf, unsigned int base)
+char * uitoa(uint32_t value, char *buf, uint32_t base)
 {
     const char * nums = "0123456789ABCDEF";
 
@@ -30,4 +32,26 @@ char * uitoa(uint32_t value, char *buf, unsigned int base)
     }
 
     return result;
+}
+
+char * ftoa(float value, char *buf, uint32_t precision)
+{
+    int intPart = (int)value;
+    
+    char *temp = uitoa(intPart, buf, 10);   
+        
+    if (precision > 0)
+    {        
+        for (;*temp != '\0'; ++temp);
+
+        *temp = '.';
+
+        ++temp;
+
+        float fracPart = (value - (float)intPart) * pow(10, precision);
+
+        temp = uitoa(fracPart, temp, 10);   
+    }
+
+    return buf;
 }
