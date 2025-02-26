@@ -16,6 +16,6 @@ typedef struct MemoryMapEntry
     uint32_t extended;
 } MemoryMapEntry;
 
-void displayMemoryMap(MemoryMapEntry *, int);
+void DisplayMemoryMap(MemoryMapEntry *, int);
 
 #endif

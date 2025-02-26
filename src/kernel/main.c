@@ -20,7 +20,7 @@ void ShowMemoryMap()
     //and the first entry is stored at 0x8004
     uint32_t *mmapSize = (uint32_t *)0x8000;
     kprintf("Memory Map Size: %d\n", (uint32_t)*mmapSize);
-    displayMemoryMap((MemoryMapEntry *)0x8004, *mmapSize);
+    DisplayMemoryMap((MemoryMapEntry *)0x8004, *mmapSize);
 }
     
 void kernel_interrupt_handler( int number )

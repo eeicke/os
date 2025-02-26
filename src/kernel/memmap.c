@@ -1,7 +1,7 @@
 #include "memmap.h"
 #include "display.h"
 
-void displayMemoryMap(MemoryMapEntry *mmap, int size)
+void DisplayMemoryMap(MemoryMapEntry *mmap, int size)
 {
     for (int i = 0; i < size; ++i, ++mmap)
     {                

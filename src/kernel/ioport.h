@@ -1,10 +1,12 @@
 #ifndef _IOPORT_H
 #define _IOPORT_H
 
-void outByte(unsigned int port, unsigned char val);
-void outWord(unsigned int port, unsigned short val);
-void outDoubleWord(unsigned int port, unsigned int val);
-unsigned int inDoubleWord(unsigned int port);
-unsigned short inWord(unsigned int port);
+void OutByte(unsigned int port, unsigned char val);
+void OutWord(unsigned int port, unsigned short val);
+void OutDword(unsigned int port, unsigned int val);
+
+unsigned char InByte(unsigned int port);
+unsigned short InWord(unsigned int port);
+unsigned int InDword(unsigned int port);
 
 #endif

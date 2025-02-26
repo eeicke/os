@@ -1,11 +1,12 @@
-global outByte
-global outWord
-global outDoubleWord
-global inDoubleWord
-global inWord
+global OutByte
+global OutWord
+global OutDword
+global InByte
+global InWord
+global InDword
 
-;void outByte(unsigned int port, unsigned char val)
-outByte:
+;void OutByte(unsigned int port, unsigned char val)
+OutByte:
     ;save these because we need to use them
     push edx
     push eax
@@ -24,8 +25,8 @@ outByte:
 
     ret
 
-;void outWord(unsigned int port, unsigned short val)
-outWord:
+;void OutWord(unsigned int port, unsigned short val)
+OutWord:
     ;save these because we need to use them
     push edx
     push eax
@@ -44,8 +45,8 @@ outWord:
 
     ret
 
-;void outDoubleWord(unsigned int port, unsigned int val)
-outDoubleWord:
+;void OutDword(unsigned int port, unsigned int val)
+OutDword:
     ;save these because we need to use them
     push edx
     push eax
@@ -64,8 +65,8 @@ outDoubleWord:
 
     ret
 
-;unsigned int inDoubleWord(unsigned int port)
-inDoubleWord:
+;unsigned usigned char InByte(unsigned int port)
+InByte:
     ;save this because we need to use it
     push edx
 
@@ -74,13 +75,14 @@ inDoubleWord:
     
     mov dx, [esp + 8]
     
-    in eax, dx
+    in al, dx
     
     pop edx
 
     ret
 
-inWord:
+;unsigned short InWord(unsigned int port)
+InWord:
     ;save this because we need to use it
     push edx
 
@@ -90,6 +92,22 @@ inWord:
     mov dx, [esp + 8]
     
     in ax, dx
+    
+    pop edx
+
+    ret
+
+;unsigned int InDword(unsigned int port)
+InDword:
+    ;save this because we need to use it
+    push edx
+
+    xor edx, edx
+    xor eax, eax
+    
+    mov dx, [esp + 8]
+    
+    in eax, dx
     
     pop edx
 
