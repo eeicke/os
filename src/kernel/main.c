@@ -5,18 +5,16 @@
 
 unsigned char int32FiredOnce = 0;
 
-void showMemoryMap();
+void ShowMemoryMap();
 
 void kernel_main()
 {         
     kprint("Starting OS\n");  
-    
-    //showMemoryMap();
-
+        
     while( 1 );
 }
 
-void showMemoryMap()
+void ShowMemoryMap()
 {
     //The boot process stores the length of the array at address 0x8000
     //and the first entry is stored at 0x8004
@@ -33,5 +31,5 @@ void kernel_interrupt_handler( int number )
     if (number == 32)
         int32FiredOnce = 1;
 
-    kprintf("Int %d\n", number);
+    //kprintf("Int %d\n", number);
 }

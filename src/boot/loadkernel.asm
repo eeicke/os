@@ -46,6 +46,6 @@ cprintFinished:
     int 10h
     ret
 
-numberOfSectors db 8
+numberOfSectors db 9
 currentSector db 2
 loadKernelErrorMessage db 'Kernel Load Error', 10, 0

@@ -2,6 +2,7 @@ global outByte
 global outWord
 global outDoubleWord
 global inDoubleWord
+global inWord
 
 ;void outByte(unsigned int port, unsigned char val)
 outByte:
@@ -74,6 +75,21 @@ inDoubleWord:
     mov dx, [esp + 8]
     
     in eax, dx
+    
+    pop edx
+
+    ret
+
+inWord:
+    ;save this because we need to use it
+    push edx
+
+    xor edx, edx
+    xor eax, eax
+    
+    mov dx, [esp + 8]
+    
+    in ax, dx
     
     pop edx
 
