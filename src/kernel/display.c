@@ -144,67 +144,6 @@ void kprintf(char *format, ...)
         printUnsignedInteger(va_arg( arg, uint64_t ), zeroPadWidth, 10);
 }
 
-/*
-
-void kprintf2(char *format, ...)
-{    
-    char tmp[30];
-
-    if (format == NULL)
-        return;
-
-    va_list arg;
-    va_start(arg, format);
-
-    for (;*(format) != '\0'; ++format)
-    {
-        if (*format == '%')
-        {
-            ++format;
-
-            switch (*format)
-            {
-                case 'l':
-                    
-                    int base = 10;
-
-                    ++format;
-                    if (*format == 'x')
-                        base = 16;
-                    else
-                        --format;
-                                        
-                    uitoa(va_arg( arg, uint64_t ), tmp, base);
-                    kprint(tmp);
-                break;
-
-                case 'd':
-                    uitoa(va_arg( arg, uint32_t ), tmp, 10);
-                    kprint(tmp);
-                break;
-
-                case 'x':
-                    uitoa(va_arg( arg, uint32_t ), tmp, 16);
-                    kprint(tmp);
-                break;
-
-                case 'c':                    
-                    kputchar((char)va_arg( arg, uint32_t));
-                break;
-
-                case 's':                    
-                    kprint(va_arg( arg, char *));
-                break;
-            }
-        }
-        else
-            kputchar(*format);        
-    }
-
-    va_end(arg);
-}
-*/
-
 void kprint(char *message)
 {    
     if (message == NULL)
@@ -380,7 +319,6 @@ void printFloat(float val, uint32_t zeroPadWith, uint32_t precisionWidth)
 
     kprint(tmp);
 }
-
 
 void setTextColor(unsigned char color)
 {
