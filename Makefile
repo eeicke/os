@@ -29,7 +29,8 @@ KERNEL_IMAGE = $(BIN_DIR)/kernel.img
 KERNEL_LINKER_SCRIPT = $(KERNEL_SRC_DIR)/linker.ld
 KERNEL_FLAGS = -Wall -m32 -c -ffreestanding -fno-asynchronous-unwind-tables -fno-pie
 
-SECONDARY_DRIVE = $(BIN_DIR)/second.img
+SECONDARY_DRIVE_NAME = second.img
+SECONDARY_DRIVE = $(BIN_DIR)/$(SECONDARY_DRIVE_NAME)
 
 DISK_IMG=$(BIN_DIR)/os.img
 
@@ -73,4 +74,7 @@ resetseconddrive: $(BIN_DIR)
 	dd if=/dev/zero of=$(BIN_DIR)/second.img bs=512 count=8192
 
 clean: $(BIN_DIR)
-	rm -f $(BIN_DIR)/*	
+	find $(BIN_DIR)/ ! -name '$(SECONDARY_DRIVE_NAME)' -type f -exec rm -rf {} +
+
+cleanall: $(BIN_DIR)
+	rm -f $(BIN_DIR)/*
