@@ -15,23 +15,27 @@ typedef enum State
     looking = 0,
     specifier = 1,
     zeroPadding = 2,
-    precision = 3,
-    longInt = 4
+    spacePadding = 3,
+    precision = 4,
+    longInt = 5
 } State;
 
 
-void kprintf(char *format, ...)
+int kprintf(char *format, ...)
 {    
     if (format == NULL)
-        return;
+        return 0;
 
     va_list arg;
     va_start(arg, format);
 
     enum State state = looking;    
     int zeroPadWidth = 0;    
+    int spacePadWidth = 0;
     int precisionWidth = 0;
     int precisionFlag = 0;
+
+    int position = 0;
 
     for (;*(format) != '\0'; ++format)
     {
@@ -42,11 +46,15 @@ void kprintf(char *format, ...)
                 {
                     zeroPadWidth = 0;
                     precisionFlag = 0;
-                    precisionWidth = 0;                                        
+                    precisionWidth = 0;
+                    spacePadWidth = 0;
                     state = specifier;
+
+                    continue;
                 }
-                else
-                    kputchar(*format); 
+                
+                kputchar(*format); 
+                ++position;
             break;
 
             case specifier:                                
@@ -55,6 +63,7 @@ void kprintf(char *format, ...)
                     case '%':
                         state = looking;
                         kputchar(*format); 
+                        ++position;
                     break;
 
                     case '.':                           
@@ -64,20 +73,33 @@ void kprintf(char *format, ...)
 
                     case '0':                              
                         state = zeroPadding;
-                    break;                    
+                    break;         
+                    
+                    case '1': case '2': case '3': 
+                    case '4': case '5': case '6': 
+                    case '7': case '8': case '9':
+                        spacePadWidth = *format - '0';                        
+                        state = spacePadding;
+                    break;
+
+                    case 'n':
+                        int32_t *nval = va_arg(arg, int32_t *);
+                        *nval = position;
+                        state = looking;
+                    break;
 
                     case 'd':
-                        printSignedInteger(va_arg( arg, int32_t ), zeroPadWidth, 10);
+                        position += printSignedInteger(va_arg(arg, int32_t), zeroPadWidth, 10);
                         state = looking;
                     break;
 
                     case 'u':
-                        printUnsignedInteger(va_arg( arg, uint32_t ), zeroPadWidth, 10);
+                        position += printUnsignedInteger(va_arg(arg, uint32_t), zeroPadWidth, 10);
                         state = looking;
                     break;
 
                     case 'x':
-                        printUnsignedInteger(va_arg( arg, uint32_t ), zeroPadWidth, 16);
+                        position += printUnsignedInteger(va_arg(arg, uint32_t), zeroPadWidth, 16);
                         state = looking;
                     break;
 
@@ -86,17 +108,34 @@ void kprintf(char *format, ...)
                     break;
 
                     case 'f':                                                              
-                        printFloat(va_arg( arg, double ), zeroPadWidth, precisionFlag == 1 ? precisionWidth : 6);
+                        position += printFloat(va_arg(arg, double), zeroPadWidth, precisionFlag == 1 ? precisionWidth : 6);
                         state = looking;
                     break;
 
                     case 'c':
-                        kputchar((char)va_arg( arg, uint32_t));
+                        kputchar((char)va_arg(arg, uint32_t));
+                        ++position;
                         state = looking;
                     break;
 
-                    case 's':
-                        kprint(va_arg( arg, char *));
+                    case 's':                        
+                        char *sval = va_arg(arg, char *);
+
+                        int len = strlen(sval);  
+
+                        if (spacePadWidth > 0 && (len < spacePadWidth))
+                        {                                                                                  
+                            for (int i = 0; i < (spacePadWidth - len); ++i)
+                            {
+                                kputchar(' ');
+                                ++position;
+                            }                                                
+                        }
+
+                        position += len;
+                        
+                        kprint(sval);
+
                         state = looking;
                     break;
 
@@ -121,6 +160,16 @@ void kprintf(char *format, ...)
                 }
             break;
 
+            case spacePadding:
+                if (*format >= '0' && *format <= '9')
+                    spacePadWidth = (spacePadWidth * 10) + (*format - '0');
+                else
+                {
+                    --format;
+                    state = specifier;
+                }                
+            break;
+
             case precision:                
                 if (*format >= '0' && *format <= '9')
                     precisionWidth = (precisionWidth * 10) + (*format - '0');
@@ -133,10 +182,10 @@ void kprintf(char *format, ...)
 
             case longInt:
                 if (*format == 'x')
-                    printUnsignedInteger(va_arg( arg, uint64_t ), zeroPadWidth, 16);
+                    position += printUnsignedInteger(va_arg( arg, uint64_t ), zeroPadWidth, 16);
                 else
                 {
-                    printUnsignedInteger(va_arg( arg, uint64_t ), zeroPadWidth, 10);
+                    position += printUnsignedInteger(va_arg( arg, uint64_t ), zeroPadWidth, 10);
                     --format;
                 }
                         
@@ -146,7 +195,9 @@ void kprintf(char *format, ...)
     }
 
     if (state == longInt)
-        printUnsignedInteger(va_arg( arg, uint64_t ), zeroPadWidth, 10);
+        position += printUnsignedInteger(va_arg( arg, uint64_t ), zeroPadWidth, 10);
+
+    return position;
 }
 
 void kprint(char *message)
@@ -257,13 +308,16 @@ void kprintmem(uint8_t * start, uint32_t length)
     }
 }
 
-void printSignedInteger(int32_t val, uint32_t zeroPadWith, uint32_t base)
+int printSignedInteger(int32_t val, uint32_t zeroPadWith, uint32_t base)
 {    
     char tmp[30];
+
+    int result = 0;    
 
     if (val < 0)
     {
         kputchar('-');
+        ++result;
         val = abs32(val);
     }
 
@@ -276,16 +330,25 @@ void printSignedInteger(int32_t val, uint32_t zeroPadWith, uint32_t base)
         if (len < zeroPadWith)
         {
             for (int i = 0; i < zeroPadWith - len; ++i)
+            {
                 kputchar('0');
+                ++result;
+            }
         }
     }    
 
+    result += strlen(tmp);
+
     kprint(tmp);
+
+    return result;
 }
 
-void printUnsignedInteger(uint32_t val, uint32_t zeroPadWith, uint32_t base)
+int printUnsignedInteger(uint32_t val, uint32_t zeroPadWith, uint32_t base)
 {    
     char tmp[30];
+
+    int result = 0;    
 
     uitoa(val, tmp, base);
     
@@ -296,16 +359,25 @@ void printUnsignedInteger(uint32_t val, uint32_t zeroPadWith, uint32_t base)
         if (len < zeroPadWith)
         {
             for (int i = 0; i < zeroPadWith - len; ++i)
+            {
                 kputchar('0');
+                ++result;
+            }
         }
     }    
 
+    result += strlen(tmp);
+
     kprint(tmp);
+
+    return result;
 }
 
-void printFloat(float val, uint32_t zeroPadWith, uint32_t precisionWidth)
+int printFloat(float val, uint32_t zeroPadWith, uint32_t precisionWidth)
 {      
-    char tmp[30];    
+    char tmp[30];
+    
+    int result = 0;
 
     ftoa(val, tmp, precisionWidth);
     
@@ -318,11 +390,18 @@ void printFloat(float val, uint32_t zeroPadWith, uint32_t precisionWidth)
         if (len < zeroPadWith)
         {
             for (int i = 0; i < zeroPadWith - len; ++i)
+            {
                 kputchar('0');
+                ++result;
+            }
         }
     }    
 
+    result += strlen(tmp);
+
     kprint(tmp);
+
+    return result;
 }
 
 void setTextColor(unsigned char color)

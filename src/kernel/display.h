@@ -23,13 +23,13 @@
 
 #define MAKECOLOR(fg,bg) ((bg << 4) | fg)
 
-extern void kprintf(char *, ...);
+extern int kprintf(char *, ...);
 extern void kprint(char *);
 extern void kputchar(char);
 extern void kprintmem(uint8_t * start, uint32_t length);
-void printSignedInteger(int32_t, uint32_t, uint32_t);
-void printUnsignedInteger(uint32_t, uint32_t, uint32_t);
-void printFloat(float, uint32_t, uint32_t);
+int printSignedInteger(int32_t, uint32_t, uint32_t);
+int printUnsignedInteger(uint32_t, uint32_t, uint32_t);
+int printFloat(float, uint32_t, uint32_t);
 void setTextColor(unsigned char);
 unsigned char getTextColor();
 
