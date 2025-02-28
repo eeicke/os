@@ -8,7 +8,9 @@ unsigned char int32FiredOnce = 0;
 void kernel_main()
 {         
     kprint("Starting OS\n");     
-    
+
+    InitATA();    
+
     while( 1 );
 }
 

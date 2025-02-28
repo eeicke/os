@@ -1,11 +1,38 @@
 #include "ata.h"
 
+static int hasSecondDrive = 0;
+
+void InitATA()
+{
+    //Check for Second Drive
+    hasSecondDrive = 0;
+
+    OutByte(BASEPORT + 6, 0x0F0);
+
+    for(int i = 0; i < 1000; ++i)
+    {
+      if(InByte(BASEPORT + 7) != 0)
+      {        
+        hasSecondDrive = 1;
+        break;
+      }
+    }
+        
+    //Switch to Primary Drive
+    OutByte(BASEPORT + 6, 0xE0);
+}
+
+int HasSecondDrive()
+{
+    return hasSecondDrive;
+}
+
 int ReadBlockPIO(uint8_t drive, uint32_t lba, void* buffer)
 {
     if (drive > 1)
         drive = 1;
 
-    OutByte(BASEPORT + 6, ((0x0e0 | (drive << 4)) | ((lba & 0x0F000000 ) >> 24)));            
+    OutByte(BASEPORT + 6, ((0x0E0 | (drive << 4)) | ((lba & 0x0F000000 ) >> 24)));            
     OutByte(BASEPORT + 2, 1);
     OutByte(BASEPORT + 3, lba & 0x000000FF);
     OutByte(BASEPORT + 4, (lba & 0x0000FF00) >> 8);
@@ -26,7 +53,7 @@ int WriteBlockPIO(uint8_t drive, uint32_t lba, void* buffer)
     if (drive > 1)
         drive = 1;    
 
-    OutByte(BASEPORT + 6, ((0x0e0 | (drive << 4)) | ((lba & 0x0F000000 ) >> 24)));
+    OutByte(BASEPORT + 6, ((0x0E0 | (drive << 4)) | ((lba & 0x0F000000 ) >> 24)));
     OutByte(BASEPORT + 2, 1);
     OutByte(BASEPORT + 3, lba & 0x000000FF);
     OutByte(BASEPORT + 4, (lba & 0x0000FF00) >> 8);
