@@ -88,6 +88,10 @@ int kprintf(char *format, ...)
                         state = looking;
                     break;
 
+                    case '*':
+                        spacePadWidth = -1;
+                    break;
+
                     case 'd':
                         position += printSignedInteger(va_arg(arg, int32_t), zeroPadWidth, 10);
                         state = looking;
@@ -119,6 +123,9 @@ int kprintf(char *format, ...)
                     break;
 
                     case 's':                        
+                        if (spacePadWidth < 0)
+                            spacePadWidth = va_arg(arg, int32_t);
+                            
                         char *sval = va_arg(arg, char *);
 
                         int len = strlen(sval);  
