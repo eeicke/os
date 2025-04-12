@@ -22,5 +22,5 @@ void kernel_interrupt_handler( int number )
     if (number == 32)
         int32FiredOnce = 1;
 
-    //kprintf("Int %d\n", number);
+    kprintf("Int %d\n", number);
 }
